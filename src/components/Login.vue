@@ -5,14 +5,14 @@
         <div class="modal-container">
           <div class="main"></div>
           <div class="form">
-            <h3>创建账户</h3>
-            <div v-show="true" class="register">
+            <h3 @click="showRegister">创建账户</h3>
+            <div v-show="isShowRegister" class="register">
               <input type="text" placeholder="用户名">
               <input type="password" placeholder="密码">
               <div class="button">创建账号</div>
             </div>
-            <h3>登录</h3>
-            <div v-show="false" class="login">
+            <h3 @click="showLogin">登录</h3>
+            <div v-show="isShowLogin" class="login">
               <input type="text" placeholder="输入用户名">
               <input type="password" placeholder="密码">
               <div class="button"> 登录</div>
@@ -29,7 +29,18 @@ export default {
   name: 'Login',
   data() {
     return {
-      msg: 'This is login page'
+      isShowLogin: true,
+      isShowRegister: false
+    }
+  },
+  methods: {
+    showRegister() {
+      this.isShowRegister = true
+      this.isShowLogin = false
+    },
+    showLogin() {
+      this.isShowRegister = false
+      this.isShowLogin = true
     }
   }
 }
