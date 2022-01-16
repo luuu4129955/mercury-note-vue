@@ -84,7 +84,15 @@ export default {
       obj.notice = ''
       console.log(`start ${obj.path}..., username: ${obj.username} , password: ${obj.password}`);
       auth.loginOrRegister(obj, {username: obj.username, password: obj.password})
-        .then(data => {console.log(data);})
+        .then(data => {
+          obj.isError = false
+          obj.notice = ''
+          this.$router.push({path:'notebooks'})
+        })
+        .catch(data => {
+          obj.isError = true
+          obj.notice = data.msg
+        })
     }
   }
 }
