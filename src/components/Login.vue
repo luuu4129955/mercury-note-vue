@@ -7,21 +7,21 @@
           <div class="form">
             <h3 @click="showRegister">创建账户</h3>
             <transition name="slide">
-            <div :class="{show:isShowRegister}" class="register">
-              <input type="text" v-model="register.username" placeholder="用户名">
-              <input type="password" v-model="register.password" @keyup.enter="onCheck(register)" placeholder="密码">
-              <p :class="{error:register.isError}">{{ register.notice }}</p>
-              <div class="button" @click="onCheck(register)">创建账号</div>
-            </div>
+              <div :class="{show:isShowRegister}" class="register">
+                <input type="text" v-model="register.username" placeholder="用户名">
+                <input type="password" v-model="register.password" @keyup.enter="onCheck(register)" placeholder="密码">
+                <p :class="{error:register.isError}">{{ register.notice }}</p>
+                <div class="button" @click="onCheck(register)">创建账号</div>
+              </div>
             </transition>
             <h3 @click="showLogin">登录</h3>
             <transition name="slide">
-            <div :class="{show:isShowLogin}" class="login">
-              <input type="text" v-model="login.username" placeholder="输入用户名">
-              <input type="password" v-model="login.password" @keyup.enter="onCheck(login)" placeholder="密码">
-              <p :class="{error:login.isError}">{{ login.notice }}</p>
-              <div class="button" @click="onCheck(login)"> 登录</div>
-            </div>
+              <div :class="{show:isShowLogin}" class="login">
+                <input type="text" v-model="login.username" placeholder="输入用户名">
+                <input type="password" v-model="login.password" @keyup.enter="onCheck(login)" placeholder="密码">
+                <p :class="{error:login.isError}">{{ login.notice }}</p>
+                <div class="button" @click="onCheck(login)"> 登录</div>
+              </div>
             </transition>
           </div>
         </div>
@@ -31,6 +31,9 @@
 </template>
 
 <script>
+import auth from "../apis/auth";
+
+
 export default {
   name: 'Login',
   data() {
@@ -41,13 +44,15 @@ export default {
         username: '',
         password: '',
         notice: '输入用户名和密码',
-        isError: false
+        isError: false,
+        path: 'login'
       },
       register: {
         username: '',
         password: '',
         notice: '创建账户后，请记住用户名和密码',
-        isError: false
+        isError: false,
+        path: 'register'
       },
       msg: {
         username: '用户名3~15个字符，仅限于字母数字下划线中文',
@@ -64,7 +69,7 @@ export default {
       this.isShowRegister = false
       this.isShowLogin = true
     },
-    onCheck(obj){
+    onCheck(obj) {
       if (!/^[\w\u4e00-\u9fa5]{3,15}$/.test(obj.username)) {
         obj.isError = true
         obj.notice = this.msg.username
@@ -77,7 +82,9 @@ export default {
       }
       obj.isError = false
       obj.notice = ''
-      console.log(`start login..., username: ${obj.username} , password: ${obj.password}`);
+      console.log(`start ${obj.path}..., username: ${obj.username} , password: ${obj.password}`);
+      auth.loginOrRegister(obj, {username: obj.username, password: obj.password})
+        .then(data => {console.log(data);})
     }
   }
 }
@@ -155,7 +162,8 @@ export default {
       height: 0;
       overflow: hidden;
       transition: height .4s;
-      &.show{
+
+      &.show {
         height: 193px;
       }
 
