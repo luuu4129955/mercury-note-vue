@@ -31,7 +31,8 @@
 </template>
 
 <script>
-import auth from "../apis/auth";
+import Auth from "../apis/auth";
+import Bus from '../helpers/bus.js'
 
 export default {
   name: 'Login',
@@ -82,11 +83,14 @@ export default {
       obj.isError = false
       obj.notice = ''
       console.log(`start ${obj.path}..., username: ${obj.username} , password: ${obj.password}`);
-      auth.loginOrRegister(obj, {username: obj.username, password: obj.password})
-        .then(data => {
+      Auth.loginOrRegister(obj, {username: obj.username, password: obj.password})
+        .then(() => {
           obj.isError = false
           obj.notice = ''
-          this.$router.push({path:'notebooks'})
+          if (obj === this.login) {
+            Bus.$emit('useInfo', obj.username)
+          }
+          this.$router.push({path: 'notebooks'})
         })
         .catch(data => {
           obj.isError = true

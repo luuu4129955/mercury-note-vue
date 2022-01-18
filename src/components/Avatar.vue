@@ -2,7 +2,9 @@
   <span :title="username">{{ slug }}</span>
 </template>
 <script>
-import auth from '../apis/auth'
+import Auth from '../apis/auth'
+import Bus from '../helpers/bus.js'
+
 
 export default {
   data() {
@@ -11,7 +13,11 @@ export default {
     }
   },
   created() {
-    auth.getInfo().then(res => {
+    Bus.$on('userInfo', username => {
+      this.username = username
+    })
+
+    Auth.getInfo().then(res => {
       if (res.isLogin) {
         this.username = res.data.username
       }
