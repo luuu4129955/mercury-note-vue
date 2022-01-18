@@ -14,13 +14,16 @@
 
 <script>
 import Avatar from "./Avatar";
-import auth from '../apis/auth'
+import Auth from '../apis/auth'
+import Bus from '../helpers/bus'
+
 export default {
   components: {Avatar},
   methods: {
     logout() {
-    auth.logout().then(data=>{
+    Auth.logout().then(()=>{
       this.$router.push({path:'login'})
+      Bus.$emit('userInfo','未登录')
     })
 
     }
