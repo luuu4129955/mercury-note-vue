@@ -22,7 +22,8 @@ const webpackConfig = merge(baseWebpackConfig, {
       sourceMap: config.build.productionSourceMap,
       extract: true,
       usePostCSS: true
-    })
+    }),
+
   },
   devtool: config.build.productionSourceMap ? config.build.devtool : false,
   output: {
