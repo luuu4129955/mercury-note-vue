@@ -1,16 +1,17 @@
 <template>
   <div id="app">
-    <Sidebar></Sidebar>
+    <sidebar></sidebar>
     <router-view></router-view>
   </div>
 </template>
 
 <script>
-import Sidebar from "./components/Sidebar";
-
+import sidebar from './components/Sidebar.vue'
 export default {
-  name: 'App',
-  components: {Sidebar}
+  name: 'app',
+  components: {
+    sidebar
+  }
 }
 </script>
 
@@ -35,7 +36,7 @@ a {
   text-decoration: none;
   color: #444;
 }
-ul, li {
+ul, li{
   list-style: none;
 }
 .btn {
