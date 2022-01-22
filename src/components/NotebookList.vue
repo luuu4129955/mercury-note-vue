@@ -5,24 +5,17 @@
     </header>
     <main>
       <div class="layout">
-        <h3>笔记本列表()</h3>
+        <h3>笔记本列表({{ notebooks.length }})</h3>
         <div class="book-list">
-<!--          <router-link v-for="notebook in notebooks" to="/note/1" class="notebook">-->
-<!--            <div>-->
-<!--              <span class="iconfont icon-notebook"></span> {{notebook.title}}-->
-<!--              <span>{{notebook.noteCounts}}</span>-->
-<!--              <span class="action" @click.stop.prevent="onEdit(notebook)">编辑</span>-->
-<!--              <span class="action" @click.stop.prevent="onDelete(notebook)">删除</span>-->
-<!--              <span class="date">{{notebook.friendlyCreatedAt}}</span>-->
-<!--            </div>-->
-<!--          </router-link>-->
-          <div>
-            <span class="iconfont icon-notebook"></span> 标题
-            <span>笔记数量</span>
-            <span class="action" @click.stop.prevent="onEdit()">编辑</span>
-            <span class="action" @click.stop.prevent="onDelete()">删除</span>
-            <span class="date">创建时间</span>
-          </div>
+          <router-link v-for="notebook in notebooks" to="/note/1" class="notebook" :key="notebook.id">
+            <div>
+              <span class="iconfont icon-notebook"></span> {{ notebook.title }}
+              <span>{{ notebook.noteCounts }}</span>
+              <span class="action" @click.stop.prevent="onEdit()">编辑</span>
+              <span class="action" @click.stop.prevent="onDelete()">删除</span>
+              <span class="date">创建时间</span>
+            </div>
+          </router-link>
         </div>
       </div>
 
@@ -33,30 +26,64 @@
 
 <script>
 import Auth from '../apis/auth'
+import Notebooks from '../apis/notebook'
 
+window.Notebooks = Notebooks
 export default {
   data() {
     return {
-      msg: '笔记本列表'
+      notebooks: []
     }
   },
+
   created() {
     Auth.getInfo()
-    .then(res=>{
-      if(!res.isLogin){
-        this.$router.push({path:'/login'})
-      }
-    })
+      .then(res => {
+        if (!res.isLogin) {
+          this.$router.push({path: '/login'})
+        }
+      })
+
+    Notebooks.getAll()
+      .then(res => {
+        this.notebooks = res.data
+
+      })
   },
-  methods:{
-    onCreate(){
-      console.log('create');
+  methods: {
+    onCreate() {
+      let title = window.prompt('创建笔记本')
+      if (title.trim() === '') {
+        return alert('笔记本不能为空')
+      }
+      Notebooks.addNotebook({title})
+        .then(res => {
+          console.log(res);
+          this.notebooks.unshift(res.data)
+          alert(res.msg)
+        })
     },
-    onEdit(){
+    onEdit(notebook) {
       console.log('edit');
+      let title = window.prompt('修改标题', notebook.title)
+      Notebooks.updateNotebook(notebook.id, {title})
+        .then(res => {
+          console.log(res);
+          notebook.title = title
+          alert(res.msg)
+        })
     },
-    onDelete(){
+    onDelete(notebook) {
       console.log('delete');
+      let isConfirm = window.confirm('你确定要删除吗')
+      if (isConfirm) {
+        Notebooks.deleteNotebook(notebook.id)
+          .then(res => {
+            console.log(res);
+            this.notebooks.splice(this.notebooks.indexOf(notebook), 1)
+            alert(res.msg)
+          })
+      }
     }
   }
 }
