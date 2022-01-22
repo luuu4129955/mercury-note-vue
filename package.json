@@ -12,6 +12,7 @@
   "dependencies": {
     "axios": "^0.24.0",
     "dayjs": "^1.10.7",
+    "element-ui": "^2.15.6",
     "global": "^4.4.0",
     "module": "^1.2.5",
     "serve": "^13.0.2",
