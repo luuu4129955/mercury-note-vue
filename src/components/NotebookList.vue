@@ -11,8 +11,8 @@
             <div>
               <span class="iconfont icon-notebook"></span> {{ notebook.title }}
               <span>{{ notebook.noteCounts }}</span>
-              <span class="action" @click.stop.prevent="onEdit()">编辑</span>
-              <span class="action" @click.stop.prevent="onDelete()">删除</span>
+              <span class="action" @click.stop.prevent="onEdit(notebook)">编辑</span>
+              <span class="action" @click.stop.prevent="onDelete(notebook)">删除</span>
               <span class="date">{{ notebook.friendlyCreatedAt }}</span>
             </div>
           </router-link>
