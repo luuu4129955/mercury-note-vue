@@ -72,6 +72,7 @@ export default {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         inputPattern: /^.{1,30}$/,
+        inputValue:notebook.title,
         inputErrorMessage: '标题不能为空，且不能超过30个字符。'
       }).then(({value}) => {
         title=value
