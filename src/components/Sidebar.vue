@@ -2,9 +2,9 @@
   <div id="sidebar">`
     <Avatar></Avatar>
     <div class="icons">
-      <router-link to="/note/1"><i class="iconfont icon-note"></i></router-link>
+      <router-link to="/note"><i class="iconfont icon-note"></i></router-link>
       <router-link to="/notebooks"><i class="iconfont icon-notebook"></i></router-link>
-      <router-link to="/trash/2"><i class="iconfont icon-trash"></i></router-link>
+      <router-link to="/trash"><i class="iconfont icon-trash"></i></router-link>
     </div>
     <div class="logout">
       <i class="iconfont icon-logout" @click="logout"></i>
