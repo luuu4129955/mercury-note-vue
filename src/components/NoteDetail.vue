@@ -1,28 +1,26 @@
 <template>
   <div id="note" class="detail">
-    <NoteSidebar ></NoteSidebar>
+    <NoteSidebar></NoteSidebar>
     <div class="note-detail">
-      <div class="note-empty" v-show="!curNote.id">请选择笔记</div>
-      <div class="note-detail-ct" v-show="curNote.id">
+      <div class="note-detail-ct">
         <div class="note-bar">
-          <span> 创建日期: </span>
-          <span> 更新日期: </span>
-          <span> 状态文本</span>
-          <span class="iconfont icon-delete" ></span>
-          <span class="iconfont icon-fullscreen" @click="isShowPreview = !isShowPreview"></span>
+          <span> 创建日期:{{ currentNotebook.createdAtFriendly }} </span>
+          <span> 更新日期: {{currentNotebook.updatedAtFriendly}}</span>
+          <span> {{currentNotebook.statusText}}</span>
+          <span class="iconfont icon-delete"></span>
+          <span class="iconfont icon-fullscreen"></span>
         </div>
         <div class="note-title">
-          <input type="text" v-model:value="curNote.title"  @keydown="statusText='正在输入...'"
+          <input type="text" :value="currentNotebook.title"
                  placeholder="输入标题">
         </div>
         <div class="editor">
-          <textarea v-show="isShowPreview"
-                    @keydown="statusText='正在输入...'" ></textarea>
-          <div class="preview markdown-body" v-html="previewContent" v-show="!isShowPreview">
+          <textarea :value="currentNotebook.content"
+            @keydown="statusText='正在输入...'"></textarea>
+          <div class="preview markdown-body">
           </div>
         </div>
       </div>
-
     </div>
   </div>
 </template>
@@ -41,43 +39,24 @@ export default {
 
   data() {
     return {
-      curNote: {},
-      notes: [],
-      statusText: '笔记未改动',
-      isShowPreview: false
+      currentNotebook:{
+        title:'我的笔记',
+        content:'哈哈',
+        createdAtFriendly:'一天前',
+        updatedAtFriendly:'刚刚',
+        statusText:'已保存'
+      }
     }
   },
 
   created() {
-    Auth.getInfo()
-      .then(res => {
-        if (!res.isLogin) {
-          this.$router.push({path: '/login'})
-        }
-      })
-    Bus.$once('update:notes', val => {
-      this.curNote = val.find(note => note.id === this.$route.query.noteId) || {}
-    })
-  },
-
-  computed: {
-    previewContent() {
-      console.log(this.curNote.content || '')
-      return md.render(this.curNote.content || '')
-    }
-  },
-
-  methods: {
-
-
-
 
   },
 
-  beforeRouteUpdate(to, from, next) {
-    this.curNote = this.notes.find(note => note.id === to.query.noteId) || {}
-    next()
-  }
+  computed: {},
+
+  methods: {},
+
 }
 </script>
 
