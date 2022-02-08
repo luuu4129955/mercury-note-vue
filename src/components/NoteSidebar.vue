@@ -6,7 +6,7 @@
         {{ currentNotebook.title }} <i class="iconfont icon-down"></i>
       </span>
       <el-dropdown-menu slot="dropdown">
-        <el-dropdown-item v-for="notebook in notebooks" :command="notebook.id" >
+        <el-dropdown-item v-for="notebook in notebooks" :command="notebook.id" :key="notebook.id">
           {{ notebook.title }}
         </el-dropdown-item>
         <el-dropdown-item command="trash">回收站</el-dropdown-item>
@@ -17,7 +17,7 @@
       <div>标题</div>
     </div>
     <ul class="notes">
-      <li v-for="note in notes" >
+      <li v-for="note in notes" :key="note.id">
         <router-link :to="`/note?noteId=${note.id}&notebookId=${currentNotebook.id}`">
           <span class="date">{{ note.updatedAtFriendly }}</span>
           <span class="title">{{ note.title }}</span>
