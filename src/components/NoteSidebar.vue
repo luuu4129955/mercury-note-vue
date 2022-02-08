@@ -1,12 +1,14 @@
 <template>
   <div class="note-sidebar">
-    <span class="btn add-note">添加笔记</span>
-    <el-dropdown class="notebook-title" placement="bottom">
+    <span class="btn add-note" @click="addNote">添加笔记</span>
+    <el-dropdown class="notebook-title" @command="handleCommand" placement="bottom">
       <span class="el-dropdown-link">
-        标题 <i class="iconfont icon-down"></i>
+        {{ currentNotebook.title }} <i class="iconfont icon-down"></i>
       </span>
       <el-dropdown-menu slot="dropdown">
-        <el-dropdown-item  v-for="notebook in notebooks" :key="notebook.id">{{ notebook.title }}</el-dropdown-item>
+        <el-dropdown-item v-for="notebook in notebooks" :command="notebook.id" >
+          {{ notebook.title }}
+        </el-dropdown-item>
         <el-dropdown-item command="trash">回收站</el-dropdown-item>
       </el-dropdown-menu>
     </el-dropdown>
@@ -15,10 +17,10 @@
       <div>标题</div>
     </div>
     <ul class="notes">
-      <li v-for="note in notes" :key="note.id">
-        <router-link to="`/note?noteId=${note.id}&notebookId=${curBook.id}`">
+      <li v-for="note in notes" >
+        <router-link :to="`/note?noteId=${note.id}&notebookId=${currentNotebook.id}`">
           <span class="date">{{ note.updatedAtFriendly }}</span>
-          <span class="title">{{note.title}}</span>
+          <span class="title">{{ note.title }}</span>
         </router-link>
       </li>
     </ul>
@@ -26,25 +28,47 @@
 </template>
 
 <script>
+import Notebooks from '../apis/notebooks'
+import Notes from '../apis/notes'
+
 export default {
-  created() {
-
-  },
-
   data() {
     return {
-      notebooks: [
-        {id:1,title:'假笔记本1'},
-        {id:2,title:'假笔记本2'},
-      ],
-      notes: [
-        {id:11,title:'假笔记11',updatedAtFriendly:'刚刚'},
-        {id:22,title:'假笔记22',updatedAtFriendly:'1分钟前'}
-      ],
-      curBook: {}
+      notebooks: [],
+      notes: [],
+      currentNotebook: {}
     }
   },
 
+  created() {
+    Notebooks.getAll()
+      .then(res => {
+        this.notebooks = res.data
+        this.currentNotebook = this.notebooks.find(notebook => notebook.id === this.$route.query.notebookId)
+          || this.notebooks[0] || {}
+        return Notes.getAll({notebookId: this.currentNotebook.id})
+      }).then(res => {
+      this.notes = res.data
+      this.$emit('update:notes',this.notes)
+
+    })
+  },
+
+  methods: {
+    handleCommand(notebookId) {
+      if (notebookId === 'trash') {
+        return this.$router.push({path: '/trash'})
+      }
+      this.currentNotebook = this.notebooks.find(notebook => notebook.id === notebookId)
+      Notes.getAll({notebookId})
+        .then(res => {
+          this.notes = res.data
+          this.$emit('update:notes',this.notes)
+        })
+    },
+    addNote() {
+    }
+  }
 
 }
 </script>
