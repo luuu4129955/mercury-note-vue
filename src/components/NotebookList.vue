@@ -92,6 +92,8 @@ export default {
       }).then(res => {
         this.notebooks.splice(this.notebooks.indexOf(notebook), 1)
         this.$message.success(res.msg)
+      }).catch(res=>{
+        this.$message.error(res.msg)
       })
     }
   }
