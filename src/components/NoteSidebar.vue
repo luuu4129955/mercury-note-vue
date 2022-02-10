@@ -6,9 +6,7 @@
         {{ currentNotebook.title }} <i class="iconfont icon-down"></i>
       </span>
       <el-dropdown-menu slot="dropdown">
-        <el-dropdown-item v-for="notebook in notebooks" :command="notebook.id" :key="notebook.id">
-          {{ notebook.title }}
-        </el-dropdown-item>
+        <el-dropdown-item v-for="notebook in notebooks" :command="notebook.id" :key="notebook.id">{{ notebook.title }}</el-dropdown-item>
         <el-dropdown-item command="trash">回收站</el-dropdown-item>
       </el-dropdown-menu>
     </el-dropdown>
@@ -30,6 +28,7 @@
 <script>
 import Notebooks from '../apis/notebooks'
 import Notes from '../apis/notes'
+import Bus from '../helpers/bus'
 
 export default {
   data() {
@@ -39,17 +38,17 @@ export default {
       currentNotebook: {}
     }
   },
-
   created() {
     Notebooks.getAll()
       .then(res => {
         this.notebooks = res.data
-        this.currentNotebook = this.notebooks.find(notebook => notebook.id === this.$route.query.notebookId)
+        this.currentNotebook = this.notebooks.find(notebook => notebook.id.toString() === this.$route.query.notebookId)
           || this.notebooks[0] || {}
         return Notes.getAll({notebookId: this.currentNotebook.id})
       }).then(res => {
       this.notes = res.data
-      this.$emit('update:notes',this.notes)
+      this.$emit('update:notes', this.notes)
+      Bus.$emit('update:notes', this.notes)
 
     })
   },
@@ -63,10 +62,16 @@ export default {
       Notes.getAll({notebookId})
         .then(res => {
           this.notes = res.data
-          this.$emit('update:notes',this.notes)
+          this.$emit('update:notes', this.notes)
         })
     },
     addNote() {
+      console.log('addNote');
+      Notes.addNote({notebookId: this.currentNotebook.id})
+        .then(res => {
+          console.log(res)
+          this.notes.unshift(res.data)
+        })
     }
   }
 
