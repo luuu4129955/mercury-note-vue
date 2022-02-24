@@ -7,7 +7,8 @@
       <div class="layout">
         <h3>笔记本列表({{ notebooks.length }})</h3>
         <div class="book-list">
-          <router-link v-for="notebook in notebooks" :to="`/note?notebookId=${notebook.id}`" class="notebook" :key="notebook.id">
+          <router-link v-for="notebook in notebooks" :to="`/note?notebookId=${notebook.id}`" class="notebook"
+                       :key="notebook.id">
             <div>
               <span class="iconfont icon-notebook"></span> {{ notebook.title }}
               <span>{{ notebook.noteCounts }}</span>
@@ -26,14 +27,11 @@
 
 <script>
 import Auth from '../apis/auth'
-import Notebooks from '../apis/notebooks'
-import {friendlyDate} from "../helpers/util";
+import { mapGetters,mapActions } from 'vuex'
 
-window.Notebooks = Notebooks
 export default {
   data() {
     return {
-      notebooks: []
     }
   },
 
@@ -45,13 +43,20 @@ export default {
         }
       })
 
-    Notebooks.getAll()
-      .then(res => {
-        this.notebooks = res.data
-
-      })
+    //dispatch 处理action中getNotebooks这个方法返回的promise，同时返回一个promise
+    this.$store.dispatch('getNotebooks')
   },
+  computed:{
+    ...mapGetters(['notebooks'])
+  },
+
   methods: {
+    ...mapActions([
+      'getNotebooks',
+      'addNotebook',
+      'updateNotebook',
+      'deleteNotebook',
+    ]),
     onCreate() {
       this.$prompt('请输入新笔记本标题', '创建笔记本', {
         confirmButtonText: '确定',
@@ -59,27 +64,18 @@ export default {
         inputPattern: /^.{1,30}$/,
         inputErrorMessage: '标题不能为空，且不能超过30个字符。'
       }).then(({value}) => {
-        return Notebooks.addNotebook({title: value})
-      }).then(res => {
-        res.data.friendlyCreatedAt = friendlyDate(res.data.createdAt)
-        this.notebooks.unshift(res.data)
-        this.$message.success(res.msg)
+        this.addNotebook({title: value})
       })
     },
     onEdit(notebook) {
-      let title=''
       this.$prompt('请输入新笔记本标题', '修改笔记本', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         inputPattern: /^.{1,30}$/,
-        inputValue:notebook.title,
+        inputValue: notebook.title,
         inputErrorMessage: '标题不能为空，且不能超过30个字符。'
       }).then(({value}) => {
-        title=value
-        return Notebooks.updateNotebook(notebook.id, {title: value})
-      }).then(res => {
-        notebook.title = title
-        this.$message.success(res.msg)
+        this.updateNotebook({notebookId:notebook.id, title:value})
       })
     },
     onDelete(notebook) {
@@ -88,12 +84,7 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        return Notebooks.deleteNotebook(notebook.id)
-      }).then(res => {
-        this.notebooks.splice(this.notebooks.indexOf(notebook), 1)
-        this.$message.success(res.msg)
-      }).catch(res=>{
-        this.$message.error(res.msg)
+        this.deleteNotebook({notebookId:notebook.id})
       })
     }
   }
